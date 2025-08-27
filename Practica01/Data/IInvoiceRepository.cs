@@ -11,7 +11,7 @@ namespace Practica01.Datos
     {
         List<Invoice> GetAll();
         Invoice GetById(int id);
-        bool Save();
+        bool Save(Invoice invoice);
         bool Delete(int id);
     }
 }

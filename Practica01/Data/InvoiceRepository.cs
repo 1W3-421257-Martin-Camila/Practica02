@@ -41,7 +41,34 @@ namespace Practica01.Data
 
         public Invoice GetById(int id)
         {
-            throw new NotImplementedException();
+            List<Parameter> paramaters = new List<Parameter>()
+            {
+                new Parameter()
+                {
+                    Name = "@Number",
+                    Value = id
+                }
+            };
+
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("", paramaters);
+
+            if (dt != null && dt.Rows.Count>0)
+            {
+                Invoice i = new Invoice()
+                {
+                    Number = (int)dt.Rows[0]["number"],
+                    Date = (DateTime)dt.Rows[0]["date"],
+                    PaymentMethod = new PaymentMethod()
+                    {
+                        Id = (int)dt.Rows[0]["paymentMethod"]
+                    },
+                    Customer = dt.Rows[0]["customer"].ToString()
+                };
+
+                return i;
+            }
+
+            return null;
         }
 
         public bool Save()
