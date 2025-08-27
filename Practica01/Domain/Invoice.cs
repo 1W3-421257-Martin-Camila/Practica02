@@ -14,10 +14,10 @@ namespace Practica01.Domain
         public DateTime Date { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public List<InvoiceDetail> Details { get; set; }
-
+        public string Customer { get; set; }
         public override string ToString()
         {
-            return Number + " - " + Date + " - " + PaymentMethod + " - " + Details;
+            return Number + " - " + Date + " - " + Customer + " - " + PaymentMethod + " - " + Details;
         }
     }
 }
