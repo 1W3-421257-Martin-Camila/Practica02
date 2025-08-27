@@ -1,0 +1,170 @@
+CREATE DATABASE comercio;
+GO
+
+USE comercio;
+GO
+
+CREATE TABLE formaspagos (
+    id INT IDENTITY(1,1),
+    nombre VARCHAR(50),
+    CONSTRAINT pk_formaspagos PRIMARY KEY(id)
+);
+GO
+
+CREATE TABLE articulos(
+    id INT IDENTITY(1,1),
+    nombre VARCHAR(100),
+    precio_unitario DECIMAL(10,2),
+    CONSTRAINT pk_articulos PRIMARY KEY (id)
+);
+GO
+
+CREATE TABLE facturas(
+    numero INT IDENTITY, 
+    fecha DATE,
+    id_formapago INT,
+    cliente VARCHAR(100),
+    CONSTRAINT pk_facturas PRIMARY KEY (numero),
+    CONSTRAINT fk_facturas_formaspagos FOREIGN KEY (id_formapago)
+        REFERENCES formaspagos(id)
+);
+GO
+
+CREATE TABLE detallesFacturas(
+    id INT IDENTITY(1,1),
+    id_articulo INT,
+    cantidad INT,
+    numero_factura INT,
+    CONSTRAINT pk_detallesFacturas PRIMARY KEY (id),
+    CONSTRAINT fk_detallesFacturas_articulos FOREIGN KEY (id_articulo)
+        REFERENCES articulos(id),
+    CONSTRAINT fk_detallesFacturas_facturas FOREIGN KEY (numero_factura)
+        REFERENCES facturas(numero)
+);
+GO
+
+-- ================================
+-- PROCEDIMIENTOS ALMACENADOS
+-- ================================
+
+-- Consultar artículo por nombre
+CREATE PROCEDURE [dbo].[SP_CONSULTAR_ARTICULOS]
+@nombre VARCHAR(100)
+AS
+BEGIN 
+    SELECT * 
+    FROM articulos a 
+    WHERE a.nombre = @nombre;
+END
+GO
+
+-- Insertar nuevo artículo
+CREATE PROCEDURE [dbo].[SP_INSERTAR_ARTICULO]
+@nombre VARCHAR(100),
+@precio DECIMAL(10,2),
+@NuevoID INT OUTPUT
+AS
+BEGIN
+    INSERT INTO articulos(nombre, precio_unitario)
+    VALUES(@nombre, @precio);
+
+    SET @NuevoId = SCOPE_IDENTITY();
+END
+GO
+
+-- Actualizar precio de artículo
+CREATE PROCEDURE [dbo].[SP_ACTUALIZAR_PRECIO_ARTICULO]
+@id INT,
+@nuevo_precio DECIMAL(10,2)
+AS
+BEGIN
+    UPDATE articulos
+    SET precio_unitario = @nuevo_precio
+    WHERE id = @id;
+END
+GO
+
+-- Consultar ventas por artículo
+CREATE PROCEDURE [dbo].[SP_CONSULTAR_VENTAS_POR_ARTICULO]
+@id_articulo INT
+AS
+BEGIN
+    SELECT a.nombre, 
+           SUM(d.cantidad) AS total_vendido,
+           SUM(d.cantidad * a.precio_unitario) AS total_facturado
+    FROM detallesFacturas d
+    INNER JOIN articulos a ON d.id_articulo = a.id
+    WHERE a.id = @id_articulo
+    GROUP BY a.nombre;
+END
+GO
+
+-- Consultar factura completa con detalles
+CREATE PROCEDURE [dbo].[SP_CONSULTAR_FACTURA]
+@numero INT
+AS
+BEGIN
+    SELECT f.numero, f.fecha, f.cliente, fp.nombre AS forma_pago,
+           d.cantidad, a.nombre AS articulo, a.precio_unitario,
+           (d.cantidad * a.precio_unitario) AS subtotal
+    FROM facturas f
+    INNER JOIN formaspagos fp ON f.id_formapago = fp.id
+    INNER JOIN detallesFacturas d ON f.numero = d.numero_factura
+    INNER JOIN articulos a ON d.id_articulo = a.id
+    WHERE f.numero = @numero;
+END
+GO
+
+-- Insertar factura
+CREATE PROCEDURE [dbo].[SP_INSERTAR_FACTURA]
+@fecha DATE,
+@id_formapago INT,
+@cliente VARCHAR(100),
+@NuevoNumero INT OUTPUT
+AS
+BEGIN
+    INSERT INTO facturas(fecha, id_formapago, cliente)
+    VALUES(@fecha, @id_formapago, @cliente);
+
+    SET @NuevoNumero = SCOPE_IDENTITY();
+END
+GO
+
+-- Insertar detalle de factura
+CREATE PROCEDURE [dbo].[SP_INSERTAR_DETALLEFACTURA]
+@id_articulo INT,
+@cantidad INT,
+@numero_factura INT,
+@NuevoID INT OUTPUT
+AS
+BEGIN
+    INSERT INTO detallesFacturas(id_articulo, cantidad, numero_factura)
+    VALUES(@id_articulo, @cantidad, @numero_factura);
+
+    SET @NuevoID = SCOPE_IDENTITY();
+END
+GO
+
+-- ================================
+-- DATOS DE PRUEBA
+-- ================================
+
+-- Formas de pago
+INSERT INTO formaspagos(nombre) VALUES ('Efectivo');
+INSERT INTO formaspagos(nombre) VALUES ('Tarjeta de Crédito');
+INSERT INTO formaspagos(nombre) VALUES ('Transferencia Bancaria');
+
+-- Artículos
+INSERT INTO articulos(nombre, precio_unitario) VALUES ('Mouse', 4500.00);
+INSERT INTO articulos(nombre, precio_unitario) VALUES ('Teclado', 9000.00);
+INSERT INTO articulos(nombre, precio_unitario) VALUES ('Monitor 24"', 65000.00);
+
+-- Facturas
+INSERT INTO facturas(fecha, id_formapago, cliente) VALUES ('2025-08-25', 1, 'Juan Pérez');
+INSERT INTO facturas(fecha, id_formapago, cliente) VALUES ('2025-08-26', 2, 'María Gómez');
+
+-- Detalles de facturas
+INSERT INTO detallesFacturas(id_articulo, cantidad, numero_factura) VALUES (1, 2, 1); -- 2 Mouse en factura 1
+INSERT INTO detallesFacturas(id_articulo, cantidad, numero_factura) VALUES (2, 1, 1); -- 1 Teclado en factura 1
+INSERT INTO detallesFacturas(id_articulo, cantidad, numero_factura) VALUES (3, 1, 2); -- 1 Monitor en factura 2
+GO
