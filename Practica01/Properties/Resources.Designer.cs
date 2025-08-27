@@ -59,5 +59,14 @@ namespace Practica01.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Data Source=CAMILA\SQLEXPRESS;Initial Catalog=commerce;Integrated Security=True.
+        /// </summary>
+        internal static string ConnectionString {
+            get {
+                return ResourceManager.GetString("ConnectionString", resourceCulture);
+            }
+        }
     }
 }
