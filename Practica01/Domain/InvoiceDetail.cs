@@ -1,9 +1,11 @@
 ﻿using Practica01.Domain;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Practica01.Domain
 {
@@ -13,5 +15,9 @@ namespace Practica01.Domain
         public Article Article { get; set; }
         public int Quantity { get; set; }
         public Invoice Invoice { get; set; }
+        public override string ToString()
+        {
+            return Article + " - " + Quantity + " - " + Invoice;
+        }
     }
 }

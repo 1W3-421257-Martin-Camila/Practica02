@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Practica01.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace Practica01.Datos
 {
-    public interface IBillRepository
+    public interface IInvoiceRepository
     {
+        List<Invoice> GetAll();
+        Invoice GetById(int id);
+        bool Save();
+        bool Delete(int id);
     }
 }

@@ -13,7 +13,7 @@ namespace Practica01.Domain
 
         public override string ToString()
         {
-            return "Método de Pago" + Name;
+            return "Método de Pago: " + Name;
         }
     }
 }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Practica01.Data
 {
-    internal class Parameter
+    public class Parameter
     {
+        public string Name { get; set; }
+        public object Value { get; set; }
     }
 }
