@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Practica01.Servicios
 {
-    internal class BillService
+    public class InvoiceService
     {
     }
 }
