@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Practica01.Data;
+using Practica01.Datos;
+using Practica01.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +11,38 @@ namespace Practica01.Servicios
 {
     public class InvoiceService
     {
+        private IInvoiceRepository _invoiceRepository;
+
+        public InvoiceService()
+        {
+            _invoiceRepository = new InvoiceRepository();
+        }
+
+        public Invoice GetInvoiceById(int id)
+        {
+            return _invoiceRepository.GetById(id);
+        }
+
+        public List<Invoice> GetAll()
+        {
+            return _invoiceRepository.GetAll();
+        }
+
+        public bool SaveInvoice(Invoice invoice)
+        {
+            bool saved;
+
+            var SavedInvoice = _invoiceRepository.GetById(invoice.Number);
+
+            if (SavedInvoice == null)
+            {
+                saved = _invoiceRepository.Save(invoice);
+            }
+            else
+            {
+                saved = false;
+            }
+            return saved;
+        }
     }
 }
