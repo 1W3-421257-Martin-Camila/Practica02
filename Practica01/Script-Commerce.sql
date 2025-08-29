@@ -86,12 +86,12 @@ BEGIN
         i.Number,
         i.Date,
         i.Customer,
+        pm.Id AS PaymentMethodId,   -- <-- agregamos Id
         pm.Name AS PaymentMethod
     FROM Invoices i
     INNER JOIN PaymentMethods pm ON i.PaymentMethodId = pm.Id
     WHERE i.IsActive = 1;
 END
-GO
 
 -- Guardar nueva factura
 CREATE PROCEDURE SP_SAVE_INVOICE

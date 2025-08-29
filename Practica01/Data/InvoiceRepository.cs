@@ -16,28 +16,40 @@ namespace Practica01.Data
     {
         public bool Delete(int id)
         {
-            throw new NotImplementedException();
+            List<Parameter> parameters = new List<Parameter>()
+            {
+            new Parameter() { Name = "@Number", Value = id }
+            };
+
+            int rows = DataHelper.GetInstance().ExecuteSPDML("SP_SOFTDELETE_INVOICE", parameters);
+
+            return rows > 0;
         }
 
         public List<Invoice> GetAll()
         {
             List<Invoice> list = new List<Invoice>();
 
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("");
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_ALL_INVOICES");
             // --> GetInstance() e _instance son static, por lo que
             // puedo obtener la única instancia de la clase, luego
             // llamo a ExecuteSPQuery() sobre esa instancia.
-        
-        
-            foreach(DataRow row in dt.Rows)
+
+
+            foreach (DataRow row in dt.Rows)
             {
                 Invoice i = new Invoice();
-                i.Number = (int)row["number"];
-                i.Date = (DateTime)row["date"];
-                i.PaymentMethod = new PaymentMethod();
-                i.PaymentMethod.Id = (int)row["paymentMethod"];
-                i.Customer = row["customer"].ToString();
+                i.Number = (int)row["Number"];
+                i.Date = (DateTime)row["Date"];
+                i.Customer = row["Customer"].ToString();
+                i.PaymentMethod = new PaymentMethod
+                {
+                    Id = (int)row["PaymentMethodId"],
+                    Name = row["PaymentMethod"].ToString()
+                };
+                list.Add(i);
             }
+
 
             return list;
         }
@@ -56,7 +68,7 @@ namespace Practica01.Data
                 }
             };
 
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("", paramaters); //singleton
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE", paramaters); //singleton
             //le paso el nombre del SP y la lista de arriba
             
             //var no cambia el tipo real, dt es un DataTable porque
@@ -89,13 +101,11 @@ namespace Practica01.Data
 
         public bool Save(Invoice invoice)
         {
-            // 1. Preparo parámetros
             List<Parameter> parameters = new List<Parameter>()
-            {
-                new Parameter() { Name = "@Number", Value = invoice.Number },
-                new Parameter() { Name = "@Date", Value = invoice.Date },
-                new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
-                new Parameter() { Name = "@Customer", Value = invoice.Customer }
+{
+            new Parameter() { Name = "@Date", Value = invoice.Date },
+            new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
+            new Parameter() { Name = "@Customer", Value = invoice.Customer }
             };
 
             // 2. Ejecuto SP (con el helper que hicimos antes)

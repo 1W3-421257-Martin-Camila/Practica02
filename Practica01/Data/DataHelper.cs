@@ -12,7 +12,7 @@ namespace Practica01.Datos
 {
     public class DataHelper
     {
-        private static DataHelper _instance;
+        private static DataHelper? _instance;
         private SqlConnection _connection;
 
         private DataHelper() //Patrón Singleton --> Constructor privado

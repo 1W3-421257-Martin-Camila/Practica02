@@ -9,7 +9,7 @@ namespace Practica01.Domain
     public class PaymentMethod
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public override string ToString()
         {
