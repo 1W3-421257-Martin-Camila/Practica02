@@ -60,5 +60,38 @@ namespace Practica01.Datos
 
             return dt;
         }
+
+
+        public int ExecuteSPDML(string sp, List<Parameter> parameters = null)
+        {
+            int rowsAffected = 0;
+            try
+            {
+                _connection.Open();
+                var cmd = new SqlCommand(sp, _connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parameters != null)
+                {
+                    foreach (Parameter param in parameters)
+                    {
+                        cmd.Parameters.AddWithValue(param.Name, param.Value);
+                    }
+                }
+
+                rowsAffected = cmd.ExecuteNonQuery(); // ejecuta INSERT/UPDATE/DELETE
+            }
+            catch (SqlException ex)
+            {
+                rowsAffected = -1;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return rowsAffected;
+        }
+
     }
 }

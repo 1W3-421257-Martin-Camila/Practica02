@@ -1,11 +1,14 @@
 ﻿using Practica01.Datos;
 using Practica01.Domain;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Practica01.Data
 {
@@ -43,6 +46,9 @@ namespace Practica01.Data
         {
             List<Parameter> paramaters = new List<Parameter>()
             {
+                //Dentro de esa lista se agrega un único parámetro:
+                //Nombre: "@Number"(el parámetro que espera el procedimiento almacenado en SQL)
+                //Valor: id(el valor que entró por parámetro al método).
                 new Parameter()
                 {
                     Name = "@Number",
@@ -50,9 +56,19 @@ namespace Practica01.Data
                 }
             };
 
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("", paramaters);
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("", paramaters); //singleton
+            //le paso el nombre del SP y la lista de arriba
+            
+            //var no cambia el tipo real, dt es un DataTable porque
+            //el método ExecuteSPQuery está declarado para devolver
+            //un DataTable.
 
             if (dt != null && dt.Rows.Count>0)
+                //dt != null --> valida que el objeto dt se creó correctamente.(Si ExecuteSPQuery falló
+                //devolvió null(por ejemplo: error en la conexión, SP mal escrito, etc.), entonces dt no existe.
+
+                //dt.Rows.Count > 0 --> valida que el DataTable tiene filas cargadas.
+                //Puede pasar que la consulta a la BD se ejecute bien(entonces dt no es null), pero no encuentre resultados.
             {
                 Invoice i = new Invoice()
                 {
@@ -71,9 +87,22 @@ namespace Practica01.Data
             return null;
         }
 
-        public bool Save()
+        public bool Save(Invoice invoice)
         {
-            throw new NotImplementedException();
+            // 1. Preparo parámetros
+            List<Parameter> parameters = new List<Parameter>()
+            {
+                new Parameter() { Name = "@Number", Value = invoice.Number },
+                new Parameter() { Name = "@Date", Value = invoice.Date },
+                new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
+                new Parameter() { Name = "@Customer", Value = invoice.Customer }
+            };
+
+            // 2. Ejecuto SP (con el helper que hicimos antes)
+            int rows = DataHelper.GetInstance().ExecuteSPDML("SP_SAVE_INVOICE", parameters);
+
+            // 3. Devuelvo true si afectó al menos una fila
+            return rows > 0;
         }
     }
 }

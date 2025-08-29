@@ -11,6 +11,8 @@ namespace Practica01.Servicios
 {
     public class InvoiceService
     {
+        //el service guarda la lógica del negocio: qué se puede hacer, cómo, con qué límites,
+        //y de qué forma se conectan la interfaz y los datos.
         private IInvoiceRepository _invoiceRepository;
 
         public InvoiceService()
