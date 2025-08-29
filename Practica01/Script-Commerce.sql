@@ -65,8 +65,10 @@ BEGIN
         i.Number,
         i.Date,
         i.Customer,
+        pm.Id AS PaymentMethodId,
         pm.Name AS PaymentMethod,
         d.Quantity,
+        a.Id AS ArticleId,
         a.Name AS Article,
         a.UnitPrice,
         (d.Quantity * a.UnitPrice) AS Subtotal
@@ -86,12 +88,13 @@ BEGIN
         i.Number,
         i.Date,
         i.Customer,
-        pm.Id AS PaymentMethodId,   -- <-- agregamos Id
+        pm.Id AS PaymentMethodId,
         pm.Name AS PaymentMethod
     FROM Invoices i
     INNER JOIN PaymentMethods pm ON i.PaymentMethodId = pm.Id
     WHERE i.IsActive = 1;
 END
+GO
 
 -- Guardar nueva factura
 CREATE PROCEDURE SP_SAVE_INVOICE
@@ -108,23 +111,28 @@ BEGIN
 END
 GO
 
+
 -- Métodos de pago
 INSERT INTO PaymentMethods(Name) VALUES ('Cash');
 INSERT INTO PaymentMethods(Name) VALUES ('Credit Card');
 INSERT INTO PaymentMethods(Name) VALUES ('Debit Card');
+GO
 
 -- Artículos
 INSERT INTO Articles(Name, UnitPrice) VALUES ('Laptop', 1200.50);
 INSERT INTO Articles(Name, UnitPrice) VALUES ('Mouse', 25.00);
 INSERT INTO Articles(Name, UnitPrice) VALUES ('Keyboard', 45.00);
 INSERT INTO Articles(Name, UnitPrice) VALUES ('Monitor', 300.00);
+GO
 
 -- Facturas
 INSERT INTO Invoices(Date, PaymentMethodId, Customer) VALUES ('2025-08-25', 1, 'John Doe');
 INSERT INTO Invoices(Date, PaymentMethodId, Customer) VALUES ('2025-08-26', 2, 'Jane Smith');
+GO
 
 -- Detalles de facturas
 INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (1, 1, 1); -- Laptop en factura 1
 INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (2, 2, 1); -- 2 Mouse en factura 1
 INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (3, 1, 2); -- Keyboard en factura 2
 INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (4, 2, 2); -- 2 Monitores en factura 2
+GO
