@@ -61,7 +61,8 @@ namespace Practica01.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a Data Source=CAMILA\SQLEXPRESS;Initial Catalog=commerce;Integrated Security=True.
+        ///   Busca una cadena traducida similar a Data Source=CAMILA\SQLEXPRESS;Initial Catalog=Commerce;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;
+        ///.
         /// </summary>
         internal static string ConnectionString {
             get {

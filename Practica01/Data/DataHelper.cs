@@ -50,8 +50,9 @@ namespace Practica01.Datos
                 dt.Load(cmd.ExecuteReader()); //Carga en un DataTable los resultados que lee del SP
             }
             catch (SqlException ex)
-            { 
-                dt = null;
+            {
+                Console.WriteLine("Error en ExecuteSPQuery: " + ex.Message);
+                
             }
             finally
             {
