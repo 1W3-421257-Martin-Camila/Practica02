@@ -17,7 +17,7 @@ namespace Practica01.Domain
         public string? Customer { get; set; }
         public override string ToString()
         {
-            return Number + " - " + Date + " - " + Customer + " - " + PaymentMethod + " - " + Details;
+            return Number + " - " + Date + " - " + Customer + " - " + PaymentMethod;
         }
     }
 }

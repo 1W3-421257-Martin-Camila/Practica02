@@ -21,16 +21,17 @@ else
 Console.WriteLine("\nObtener una Factura por numero - GetById");
 
 // Llamamos al Service
-Invoice? Invoiceo5 = oService.GetInvoiceById(5);
+Invoice? invoice = oService.GetInvoiceById(1);
 
 // Manejamos la respuesta
-if (Invoiceo5 != null)
+if (invoice != null)
 {
-    Console.WriteLine(Invoiceo5);
+    Console.WriteLine(invoice);
 }
 else
 {
     Console.WriteLine("No hay factura con ese id");
 }
+
 
 

@@ -54,7 +54,7 @@ namespace Practica01.Data
             return list;
         }
 
-        public Invoice GetById(int id)
+        /*public Invoice GetById(int id)
         {
             List<Parameter> paramaters = new List<Parameter>()
             {
@@ -97,7 +97,55 @@ namespace Practica01.Data
             }
 
             return null;
+        }*/
+
+        public Invoice GetById(int id)
+        {
+            List<Parameter> parameters = new List<Parameter>()
+    {
+        new Parameter() { Name = "@Number", Value = id }
+    };
+
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE", parameters);
+
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                Invoice i = new Invoice()
+                {
+                    Number = (int)dt.Rows[0]["Number"],                 // exacto alias del SP
+                    Date = (DateTime)dt.Rows[0]["Date"],
+                    Customer = dt.Rows[0]["Customer"].ToString(),
+                    PaymentMethod = new PaymentMethod()
+                    {
+                        Id = (int)dt.Rows[0]["PaymentMethodId"],       // id correcto
+                        Name = dt.Rows[0]["PaymentMethod"].ToString()  // nombre del método
+                    },
+                    Details = new List<InvoiceDetail>()
+                };
+
+                // cargar detalles
+                foreach (DataRow row in dt.Rows)
+                {
+                    InvoiceDetail detail = new InvoiceDetail()
+                    {
+                        Quantity = (int)row["Quantity"],
+                        Article = new Article()
+                        {
+                            Id = (int)row["ArticleId"],
+                            Name = row["Article"].ToString(),
+                            UnitPrice = (decimal)row["UnitPrice"]
+                        }
+                    };
+
+                    i.Details.Add(detail);
+                }
+
+                return i;
+            }
+
+            return null;
         }
+
 
         public bool Save(Invoice invoice)
         {
