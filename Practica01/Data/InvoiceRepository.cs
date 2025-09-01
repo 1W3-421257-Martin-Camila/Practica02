@@ -122,16 +122,16 @@ namespace Practica01.Data
         public bool Save(Invoice invoice)
         {
             List<Parameter> parameters = new List<Parameter>()
-{
-            new Parameter() { Name = "@Date", Value = invoice.Date },
-            new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
-            new Parameter() { Name = "@Customer", Value = invoice.Customer }
+            {
+                new Parameter() { Name = "@Date", Value = invoice.Date },
+                new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
+                new Parameter() { Name = "@Customer", Value = invoice.Customer }
             };
 
-            // 2. Ejecuto SP (con el helper que hicimos antes)
+            // Ejecutar SP
             int rows = DataHelper.GetInstance().ExecuteSPDML("SP_SAVE_INVOICE", parameters);
 
-            // 3. Devuelvo true si afectó al menos una fila
+            // Devuelve true si afectó al menos una fila
             return rows > 0;
         }
     }

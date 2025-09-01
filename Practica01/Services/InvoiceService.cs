@@ -30,6 +30,7 @@ namespace Practica01.Servicios
             return _invoiceRepository.GetAll();
         }
 
+        /*
         public bool SaveInvoice(Invoice invoice)
         {
             bool saved;
@@ -45,6 +46,13 @@ namespace Practica01.Servicios
                 saved = false;
             }
             return saved;
+        }
+        */
+
+        public bool SaveInvoice(Invoice invoice)
+        {
+            // Guardamos la factura directamente, sin chequear Number
+            return _invoiceRepository.Save(invoice);
         }
     }
 }

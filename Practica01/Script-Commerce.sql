@@ -100,14 +100,11 @@ GO
 CREATE PROCEDURE SP_SAVE_INVOICE
     @Date DATE,
     @PaymentMethodId INT,
-    @Customer VARCHAR(100),
-    @NewNumber INT OUTPUT
+    @Customer VARCHAR(100)
 AS
 BEGIN
     INSERT INTO Invoices(Date, PaymentMethodId, Customer)
     VALUES(@Date, @PaymentMethodId, @Customer);
-
-    SET @NewNumber = SCOPE_IDENTITY();
 END
 GO
 
