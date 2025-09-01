@@ -15,9 +15,19 @@ namespace Practica01.Domain
         public PaymentMethod? PaymentMethod { get; set; }
         public List<InvoiceDetail>? Details { get; set; }
         public string? Customer { get; set; }
+
         public override string ToString()
         {
-            return Number + " - " + Date + " - " + Customer + " - " + PaymentMethod;
+            string detalles = "";
+            if (Details != null)
+            {
+                foreach (var d in Details)
+                {
+                    detalles += d.ToString() + " | ";
+                }
+            }
+            return "Factura N°: " + Number + " - Fecha: " + Date + " - Cliente: " + Customer + " - Pago: " + PaymentMethod + " - Detalles: " + detalles;
         }
+
     }
 }

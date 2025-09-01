@@ -15,9 +15,10 @@ namespace Practica01.Domain
         public Article? Article { get; set; }
         public int Quantity { get; set; }
         public Invoice? Invoice { get; set; }
+
         public override string ToString()
         {
-            return Article + " - " + Quantity + " - " + Invoice;
+            return Article + " - Cantidad: " + Quantity;
         }
     }
 }

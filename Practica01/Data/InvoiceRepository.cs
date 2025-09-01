@@ -54,7 +54,7 @@ namespace Practica01.Data
             return list;
         }
 
-        /*public Invoice GetById(int id)
+        public Invoice GetById(int id)
         {
             List<Parameter> paramaters = new List<Parameter>()
             {
@@ -69,61 +69,33 @@ namespace Practica01.Data
             };
 
             var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE", paramaters); //singleton
-            //le paso el nombre del SP y la lista de arriba
-            
+                                                                                            //le paso el nombre del SP y la lista de arriba
+
             //var no cambia el tipo real, dt es un DataTable porque
             //el método ExecuteSPQuery está declarado para devolver
             //un DataTable.
 
-            if (dt != null && dt.Rows.Count>0)
-                //dt != null --> valida que el objeto dt se creó correctamente.(Si ExecuteSPQuery falló
-                //devolvió null(por ejemplo: error en la conexión, SP mal escrito, etc.), entonces dt no existe.
-
-                //dt.Rows.Count > 0 --> valida que el DataTable tiene filas cargadas.
-                //Puede pasar que la consulta a la BD se ejecute bien(entonces dt no es null), pero no encuentre resultados.
-            {
-                Invoice i = new Invoice()
-                {
-                    Number = (int)dt.Rows[0]["number"],
-                    Date = (DateTime)dt.Rows[0]["date"],
-                    PaymentMethod = new PaymentMethod()
-                    {
-                        Id = (int)dt.Rows[0]["paymentMethod"]
-                    },
-                    Customer = dt.Rows[0]["customer"].ToString()
-                };
-
-                return i;
-            }
-
-            return null;
-        }*/
-
-        public Invoice GetById(int id)
-        {
-            List<Parameter> parameters = new List<Parameter>()
-    {
-        new Parameter() { Name = "@Number", Value = id }
-    };
-
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE", parameters);
-
             if (dt != null && dt.Rows.Count > 0)
+            //dt != null --> valida que el objeto dt se creó correctamente.(Si ExecuteSPQuery falló
+            //devolvió null(por ejemplo: error en la conexión, SP mal escrito, etc.), entonces dt no existe.
+
+            //dt.Rows.Count > 0 --> valida que el DataTable tiene filas cargadas.
+            //Puede pasar que la consulta a la BD se ejecute bien(entonces dt no es null), pero no encuentre resultados.
             {
                 Invoice i = new Invoice()
                 {
-                    Number = (int)dt.Rows[0]["Number"],                 // exacto alias del SP
+                    Number = (int)dt.Rows[0]["Number"], 
                     Date = (DateTime)dt.Rows[0]["Date"],
                     Customer = dt.Rows[0]["Customer"].ToString(),
                     PaymentMethod = new PaymentMethod()
                     {
-                        Id = (int)dt.Rows[0]["PaymentMethodId"],       // id correcto
-                        Name = dt.Rows[0]["PaymentMethod"].ToString()  // nombre del método
+                        Id = (int)dt.Rows[0]["PaymentMethodId"],
+                        Name = dt.Rows[0]["PaymentMethod"].ToString()
                     },
                     Details = new List<InvoiceDetail>()
                 };
 
-                // cargar detalles
+                // cargar todos los detalles 
                 foreach (DataRow row in dt.Rows)
                 {
                     InvoiceDetail detail = new InvoiceDetail()
@@ -137,9 +109,9 @@ namespace Practica01.Data
                         }
                     };
 
+                    // Lo agrego a la lista
                     i.Details.Add(detail);
                 }
-
                 return i;
             }
 

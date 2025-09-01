@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Practica01.Domain
 {
@@ -14,7 +15,7 @@ namespace Practica01.Domain
 
         public override string ToString()
         {
-            return "Artículo: " + Name + "Precio: $" + UnitPrice;
+            return "Artículo: " + Name + " - Precio: $" + UnitPrice;
         }
     }
 }
