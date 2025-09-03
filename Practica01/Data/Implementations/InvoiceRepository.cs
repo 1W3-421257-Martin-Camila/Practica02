@@ -43,12 +43,11 @@ namespace Practica01.Data.Implementations
             {
                 Invoice i = new Invoice();
                 i.Number = (int)row["Number"];
-                i.Date = (DateTime)row["Date"];
+                i.Date = (DateTime)row["InvoiceDate"];
                 i.Customer = row["Customer"].ToString();
                 i.PaymentMethod = new PaymentMethod
                 {
-                    Id = (int)row["PaymentMethodId"],
-                    Name = row["PaymentMethod"].ToString()
+                    Id = (int)row["PaymentMethodId"]
                 };
                 i.IsActive = (bool)row["IsActive"];
                 list.Add(i);
@@ -88,12 +87,11 @@ namespace Practica01.Data.Implementations
                 Invoice i = new Invoice()
                 {
                     Number = (int)dt.Rows[0]["Number"], 
-                    Date = (DateTime)dt.Rows[0]["Date"],
+                    Date = (DateTime)dt.Rows[0]["InvoiceDate"],
                     Customer = dt.Rows[0]["Customer"].ToString(),
                     PaymentMethod = new PaymentMethod()
                     {
-                        Id = (int)dt.Rows[0]["PaymentMethodId"],
-                        Name = dt.Rows[0]["PaymentMethod"].ToString()
+                        Id = (int)dt.Rows[0]["PaymentMethodId"]
                     },
                     IsActive = (bool)dt.Rows[0]["IsActive"]
                 };

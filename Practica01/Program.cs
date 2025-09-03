@@ -54,6 +54,7 @@ class Program
 
         Invoice invoice = new Invoice();
         invoice.Customer = "Camila Martín";
+        invoice.PaymentMethod = new PaymentMethod();
         invoice.PaymentMethod.Id = 1;
         invoice.Date = DateTime.Now;
 
