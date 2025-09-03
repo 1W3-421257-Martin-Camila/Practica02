@@ -81,19 +81,6 @@ GO
 -- PROCEDIMIENTOS ALMACENADOS
 
 --FACTURAS
-
--- Guardar detalle de factura
-CREATE PROCEDURE SP_SAVE_INVOICE_DETAIL
-    @ArticleId INT,
-    @Quantity INT,
-    @InvoiceNumber INT
-AS
-BEGIN
-    INSERT INTO InvoiceDetails (ArticleId, Quantity, InvoiceNumber)
-    VALUES (@ArticleId, @Quantity, @InvoiceNumber);
-END
-GO
-
 -- Guardar factura (insert/update)
 CREATE PROCEDURE SP_SAVE_INVOICE
     @Number INT,
@@ -259,14 +246,27 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE SP_UPDATE_INVOICE_DETAIL
-    @Id INT,
+CREATE PROCEDURE SP_ADD_OR_UPDATE_INVOICE_DETAIL
+    @InvoiceNumber INT,
+    @ArticleId INT,
     @Quantity INT
 AS
 BEGIN
-    UPDATE InvoiceDetails
-    SET Quantity = @Quantity
-    WHERE Id = @Id;
+    IF EXISTS (
+        SELECT 1 FROM InvoiceDetails
+        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId
+    )
+    BEGIN
+        UPDATE InvoiceDetails
+        SET Quantity = Quantity + @Quantity
+        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO InvoiceDetails (InvoiceNumber, ArticleId, Quantity)
+        VALUES (@InvoiceNumber, @ArticleId, @Quantity);
+    END
 END
 GO
+
 

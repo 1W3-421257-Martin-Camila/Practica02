@@ -110,7 +110,7 @@ namespace Practica01.Data.Implementations
                         Value = invoiceDetail.Quantity
                     }
             };
-            exito = DataHelper.GetInstance().ExecuteSpDML("SP_SAVE_INVOICE_DETAIL", parameters);
+            exito = DataHelper.GetInstance().ExecuteSpDML("SP_ADD_OR_UPDATE_INVOICE_DETAIL", parameters);
 
             return exito;
         }
