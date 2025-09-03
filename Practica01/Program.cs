@@ -8,15 +8,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        // TEST DE FACTURAS
-        InvoiceService iService = new InvoiceService();
+       // TEST DE FACTURAS
+       InvoiceService iService = new InvoiceService();
 
         Console.WriteLine("--------- TODOS LAS FACTURAS: ---------");
 
         List<Invoice> list = iService.GetAll();
-        if (list.Count > 0) 
+        if (list.Count > 0)
         {
-            foreach (Invoice i in list) 
+            foreach (Invoice i in list)
             {
                 Console.WriteLine(i);
             }
@@ -28,14 +28,14 @@ class Program
 
         Console.WriteLine("--------- OBTENER UNA FACTURA POR SU NÚMERO --------- ");
 
-        Invoice? invoice4 = iService.GetInvoice(4);
-        if (invoice4 != null)
+        Invoice? invoice2 = iService.GetInvoice(2);
+        if (invoice2 != null)
         {
-            Console.WriteLine(invoice4);
+            Console.WriteLine(invoice2);
         }
         else
         {
-            Console.WriteLine("!!!!! NO HAY UNA FACTURA CON NÚMERO 4 ");
+            Console.WriteLine("!!!!! NO HAY UNA FACTURA CON NÚMERO 2 ");
         }
 
         Console.WriteLine("--------- ELIMINAR UNA FACTURA POR SU NUMERO ---------");
@@ -72,7 +72,8 @@ class Program
         Console.WriteLine("--------- MODIFICAR UNA FACTURA ---------");
 
         invoice.Number = 1;
-        invoice.Customer = "Juan Pérez";
+        invoice.Customer = "María Gómez";
+        invoice.PaymentMethod = new PaymentMethod();
         invoice.PaymentMethod.Id = 2;
         invoice.Date = DateTime.Now;
 
@@ -87,6 +88,8 @@ class Program
             Console.WriteLine("!!!!! NO SE PUDO MODIFICAR LA FACTURA ");
         }
 
+        Console.WriteLine("-------------------------------------------");
+        Console.WriteLine("-------------------------------------------");
 
         //TEST DE ARTÍCULOS
         ArticleService aService = new ArticleService();

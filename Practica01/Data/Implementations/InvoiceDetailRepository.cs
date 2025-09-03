@@ -97,12 +97,12 @@ namespace Practica01.Data.Implementations
                     new Parameter()
                     {
                         Name = "@InvoiceNumber",
-                        Value = invoiceDetail.Invoice
+                        Value = invoiceDetail.Invoice.Number
                     },
                     new Parameter()
                     {
                         Name = "@ArticleId",
-                        Value = invoiceDetail.Article
+                        Value = invoiceDetail.Article.Id
                     },
                     new Parameter()
                     {

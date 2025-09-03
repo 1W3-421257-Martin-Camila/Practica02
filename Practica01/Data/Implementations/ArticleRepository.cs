@@ -82,6 +82,7 @@ namespace Practica01.Data.Implementations
         {
             List<Parameter> parameters = new List<Parameter>()
             {
+                new Parameter("@Id", article.Id),
                 new Parameter("@Name", article.Name),
                 new Parameter("@UnitPrice", article.UnitPrice)
             };

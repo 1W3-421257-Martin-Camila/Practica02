@@ -17,5 +17,10 @@ namespace Practica01.Domain
         public string Customer { get; set; }
         public bool IsActive { get; set; }
 
+        public override string ToString()
+        {
+            return $"Factura {Number} - {Date.ToShortDateString()} - Cliente: {Customer} - Pago: {PaymentMethod?.Name} - Activa: {IsActive}";
+        }
+
     }
 }

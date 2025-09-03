@@ -140,8 +140,8 @@ AS
 BEGIN
     SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
     FROM Invoices i
-    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
-    INNER JOIN Articles a ON a.Id = d.ArticleId
+    LEFT JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    LEFT JOIN Articles a ON a.Id = d.ArticleId
     WHERE i.Number = @Number;
 END
 GO
@@ -150,7 +150,7 @@ GO
 CREATE PROCEDURE SP_GET_INVOICES
 AS
 BEGIN
-    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
+    SELECT DISTINCT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
     FROM Invoices i
     INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
     INNER JOIN Articles a ON a.Id = d.ArticleId
@@ -269,4 +269,6 @@ BEGIN
 END
 GO
 
+ select * from invoices
 
+ select * from articles

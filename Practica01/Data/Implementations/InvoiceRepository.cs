@@ -104,9 +104,11 @@ namespace Practica01.Data.Implementations
         {
             List<Parameter> parameters = new List<Parameter>()
             {
-                new Parameter("@Date", invoice.Date),
+                new Parameter("@Number", invoice.Number), //ESTO ASI POR DEFECTO LO VA A DEJAR EN 0 SI ES NUEVO
+                new Parameter("@InvoiceDate", invoice.Date),
                 new Parameter("@PaymentMethodId", invoice.PaymentMethod.Id),
                 new Parameter("@Customer", invoice.Customer)
+
             };
             return DataHelper.GetInstance().ExecuteSpDML("SP_SAVE_INVOICE", parameters);
         }
