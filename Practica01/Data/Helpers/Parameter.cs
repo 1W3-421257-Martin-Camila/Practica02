@@ -8,8 +8,8 @@ namespace Practica01.Data.Helpers
 {
     public class Parameter
     {
-        public string? Name { get; set; }
-        public object? Value { get; set; }
+        public string Name { get; set; }
+        public object Value { get; set; }
 
         public Parameter() { }
 

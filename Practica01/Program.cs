@@ -7,6 +7,10 @@ class Program
 {
     static void Main(string[] args)
     {
+        // TEST DE FACTURAS
+
+
+        //TEST DE ARTÍCULOS
 
     }
 }
