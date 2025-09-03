@@ -17,7 +17,7 @@ CREATE TABLE Articles (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
     UnitPrice DECIMAL(10,2) NOT NULL,
-    IsActive BIT DEFAULT 1
+    IsActive BIT NOT NULL DEFAULT 1
 );
 GO
 
@@ -136,6 +136,17 @@ BEGIN
         SET Name = @Name, UnitPrice = @UnitPrice
         WHERE Id = @Id;
     END
+END
+GO
+
+-- Dar de baja factura
+CREATE PROCEDURE SP_DEACTIVATE_INVOICE
+    @Number INT
+AS
+BEGIN
+    UPDATE Invoices
+    SET IsActive = 0
+    WHERE Number = @Number;
 END
 GO
 

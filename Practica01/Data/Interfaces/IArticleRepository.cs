@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Practica01.Data.Interfaces
 {
-    public interface IInvoiceRepository
+    public interface IArticleRepository
     {
-        List<Invoice> GetAll();
-        Invoice? GetById(int id);
-        bool Save(Invoice invoice);
+        List<Article> GetAll();
+        Article? GetById(int id);
+        bool Save(Article article);
         bool Delete(int id);
     }
 }

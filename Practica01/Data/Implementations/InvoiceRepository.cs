@@ -19,19 +19,21 @@ namespace Practica01.Data.Implementations
         {
             List<Parameter> parameters = new List<Parameter>()
             {
-            new Parameter() { Name = "@Number", Value = id }
+                new Parameter() 
+                {
+                    Name = "@Number",
+                    Value = id 
+                }
             };
 
-            int rows = DataHelper.GetInstance().ExecuteSPDML("SP_SOFTDELETE_INVOICE", parameters);
-
-            return rows > 0;
+            return DataHelper.GetInstance().ExecuteSpDML("SP_DEACTIVATE_INVOICE", parameters);
         }
 
         public List<Invoice> GetAll()
         {
             List<Invoice> list = new List<Invoice>();
 
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_ALL_INVOICES");
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICES");
             // --> GetInstance() e _instance son static, por lo que
             // puedo obtener la única instancia de la clase, luego
             // llamo a ExecuteSPQuery() sobre esa instancia.
@@ -48,14 +50,14 @@ namespace Practica01.Data.Implementations
                     Id = (int)row["PaymentMethodId"],
                     Name = row["PaymentMethod"].ToString()
                 };
+                i.IsActive = (bool)row["IsActive"];
                 list.Add(i);
             }
-
 
             return list;
         }
 
-        public Invoice GetById(int id)
+        public Invoice? GetById(int id)
         {
             List<Parameter> paramaters = new List<Parameter>()
             {
@@ -69,7 +71,7 @@ namespace Practica01.Data.Implementations
                 }
             };
 
-            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE", paramaters); //singleton
+            var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE_BY_NUMBER", paramaters); //singleton
                                                                                             //le paso el nombre del SP y la lista de arriba
 
             //var no cambia el tipo real, dt es un DataTable porque
@@ -93,26 +95,8 @@ namespace Practica01.Data.Implementations
                         Id = (int)dt.Rows[0]["PaymentMethodId"],
                         Name = dt.Rows[0]["PaymentMethod"].ToString()
                     },
-                    Details = new List<InvoiceDetail>()
+                    IsActive = (bool)dt.Rows[0]["IsActive"]
                 };
-
-                // cargar todos los detalles 
-                foreach (DataRow row in dt.Rows)
-                {
-                    InvoiceDetail detail = new InvoiceDetail()
-                    {
-                        Quantity = (int)row["Quantity"],
-                        Article = new Article()
-                        {
-                            Id = (int)row["ArticleId"],
-                            Name = row["Article"].ToString(),
-                            UnitPrice = (decimal)row["UnitPrice"]
-                        }
-                    };
-
-                    // Lo agrego a la lista
-                    i.Details.Add(detail);
-                }
                 return i;
             }
 
@@ -124,16 +108,11 @@ namespace Practica01.Data.Implementations
         {
             List<Parameter> parameters = new List<Parameter>()
             {
-                new Parameter() { Name = "@Date", Value = invoice.Date },
-                new Parameter() { Name = "@PaymentMethodId", Value = invoice.PaymentMethod.Id },
-                new Parameter() { Name = "@Customer", Value = invoice.Customer }
+                new Parameter("@Date", invoice.Date),
+                new Parameter("@PaymentMethodId", invoice.PaymentMethod.Id),
+                new Parameter("@Customer", invoice.Customer)
             };
-
-            // Ejecutar SP
-            int rows = DataHelper.GetInstance().ExecuteSPDML("SP_SAVE_INVOICE", parameters);
-
-            // Devuelve true si afectó al menos una fila
-            return rows > 0;
+            return DataHelper.GetInstance().ExecuteSpDML("SP_SAVE_INVOICE", parameters);
         }
     }
 }
