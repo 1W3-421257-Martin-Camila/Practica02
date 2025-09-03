@@ -80,6 +80,8 @@ GO
 
 -- PROCEDIMIENTOS ALMACENADOS
 
+--FACTURAS
+
 -- Guardar detalle de factura
 CREATE PROCEDURE SP_SAVE_INVOICE_DETAIL
     @ArticleId INT,
@@ -118,27 +120,6 @@ BEGIN
 END
 GO
 
--- Guardar artículo (insert/update)
-CREATE PROCEDURE SP_SAVE_ARTICLE
-    @Id INT,
-    @Name VARCHAR(100),
-    @UnitPrice DECIMAL(10,2)
-AS
-BEGIN
-    IF @Id = 0
-    BEGIN
-        INSERT INTO Articles (Name, UnitPrice, IsActive)
-        VALUES (@Name, @UnitPrice, 1);
-    END
-    ELSE
-    BEGIN
-        UPDATE Articles
-        SET Name = @Name, UnitPrice = @UnitPrice
-        WHERE Id = @Id;
-    END
-END
-GO
-
 -- Dar de baja factura
 CREATE PROCEDURE SP_DEACTIVATE_INVOICE
     @Number INT
@@ -162,6 +143,55 @@ BEGIN
     VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
 
     SET @Number = SCOPE_IDENTITY();
+END
+GO
+
+-- Recuperar factura por número
+CREATE PROCEDURE SP_GET_INVOICE_BY_NUMBER
+    @Number INT
+AS
+BEGIN
+    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
+    FROM Invoices i
+    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    INNER JOIN Articles a ON a.Id = d.ArticleId
+    WHERE i.Number = @Number;
+END
+GO
+
+-- Recuperar todas las facturas
+CREATE PROCEDURE SP_GET_INVOICES
+AS
+BEGIN
+    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
+    FROM Invoices i
+    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    INNER JOIN Articles a ON a.Id = d.ArticleId
+    ORDER BY i.Number;
+END
+GO
+
+
+--ARTICULOS
+
+-- Guardar artículo (insert/update)
+CREATE PROCEDURE SP_SAVE_ARTICLE
+    @Id INT,
+    @Name VARCHAR(100),
+    @UnitPrice DECIMAL(10,2)
+AS
+BEGIN
+    IF @Id = 0
+    BEGIN
+        INSERT INTO Articles (Name, UnitPrice, IsActive)
+        VALUES (@Name, @UnitPrice, 1);
+    END
+    ELSE
+    BEGIN
+        UPDATE Articles
+        SET Name = @Name, UnitPrice = @UnitPrice
+        WHERE Id = @Id;
+    END
 END
 GO
 
@@ -195,27 +225,37 @@ BEGIN
 END
 GO
 
--- Recuperar factura por número
-CREATE PROCEDURE SP_GET_INVOICE_BY_NUMBER
-    @Number INT
+--DETALLES FACTURAS
+
+-- Recuperar todos los detalles de facturas
+CREATE PROCEDURE SP_GET_INVOICEDETAILS
 AS
 BEGIN
-    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
-    FROM Invoices i
-    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
-    INNER JOIN Articles a ON a.Id = d.ArticleId
-    WHERE i.Number = @Number;
+SELECT *
+    FROM InvoiceDetails 
+	ORDER BY InvoiceNumber, Id;
 END
 GO
 
--- Recuperar todas las facturas
-CREATE PROCEDURE SP_GET_INVOICES
+-- Recuperar detalle de factura por id
+CREATE PROCEDURE SP_GET_INVOICE_DETAIL_BY_ID
+    @Id INT
 AS
 BEGIN
-    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
-    FROM Invoices i
-    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    SELECT 
+        d.Id,
+        d.ArticleId,
+        a.Name AS ArticleName,
+        a.UnitPrice,
+        d.Quantity,
+        i.Number AS InvoiceNumber,
+        i.InvoiceDate,
+        i.Customer,
+        i.PaymentMethodId
+    FROM InvoiceDetails d
     INNER JOIN Articles a ON a.Id = d.ArticleId
-    ORDER BY i.Number;
+    INNER JOIN Invoices i ON i.Number = d.InvoiceNumber
+    WHERE d.Id = @Id;
 END
 GO
+
