@@ -259,3 +259,14 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE SP_UPDATE_INVOICE_DETAIL
+    @Id INT,
+    @Quantity INT
+AS
+BEGIN
+    UPDATE InvoiceDetails
+    SET Quantity = @Quantity
+    WHERE Id = @Id;
+END
+GO
+
