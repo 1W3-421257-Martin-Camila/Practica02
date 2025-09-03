@@ -102,8 +102,6 @@ namespace Practica01.Data.Implementations
 
             return null;
         }
-
-
         public bool Save(Invoice invoice)
         {
             List<Parameter> parameters = new List<Parameter>()
