@@ -90,6 +90,79 @@ class Program
 
         //TEST DE ARTÍCULOS
         ArticleService aService = new ArticleService();
+
+        Console.WriteLine("--------- TODOS LOS ARTÍCULOS: ---------");
+
+        List<Article> listArt = aService.GetArticles();
+        if (listArt.Count > 0)
+        {
+            foreach (Article a in listArt)
+            {
+                Console.WriteLine(a);
+            }
+        }
+        else
+        {
+            Console.WriteLine("!!!!! NO HAY ARTÍCULOS ");
+        }
+
+        Console.WriteLine("--------- OBTENER UN ARTÍCULO POR SU ID --------- ");
+
+        Article? article2 = aService.GetArticle(2);
+        if (article2 != null)
+        {
+            Console.WriteLine(article2);
+        }
+        else
+        {
+            Console.WriteLine("!!!!! NO HAY UN ARTÍCULO CON NÚMERO 2 ");
+        }
+
+        Console.WriteLine("--------- ELIMINAR UN ARTÍCULO POR SU NUMERO ---------");
+
+        bool resultDeleteArt = aService.DeleteArticle(3);
+        if (resultDeleteArt)
+        {
+            Console.WriteLine("Se eliminó el artículo N°3 con éxito ");
+        }
+        else
+        {
+            Console.WriteLine("!!!!! NO SE PUDO ELIMINAR EL ARTÍCULO N°3");
+        }
+
+        Console.WriteLine("--------- CREAR UN ARTÍCULO ---------");
+
+        Article article = new Article();
+        article.Name = "Test";
+        article.UnitPrice = 2500;
+
+        bool resultCreateArt = aService.SaveArticle(article);
+
+        if (resultCreateArt)
+        {
+            Console.WriteLine("Se creó el artículo con éxito");
+        }
+        else
+        {
+            Console.WriteLine("!!!!! NO SE PUDO CREAR EL ARTÍCULO ");
+        }
+
+        Console.WriteLine("--------- MODIFICAR UN ARTÍCULO ---------");
+
+        article.Id = 5;
+        article.Name = "Microfibra rosa";
+        article.UnitPrice = 1000;
+
+        bool resultUpdateArt = aService.SaveArticle(article);
+
+        if (resultUpdateArt)
+        {
+            Console.WriteLine("Se modificó el artículo con éxito");
+        }
+        else
+        {
+            Console.WriteLine("!!!!! NO SE PUDO MODIFICAR EL ARTÍCULO ");
+        }
     }
 }
 
