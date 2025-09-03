@@ -1,4 +1,5 @@
-﻿using Practica01.Datos;
+﻿using Practica01.Data.Helpers;
+using Practica01.Data.Interfaces;
 using Practica01.Domain;
 using System;
 using System.Collections;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Practica01.Data
+namespace Practica01.Data.Implementations
 {
     public class InvoiceRepository : IInvoiceRepository
     {

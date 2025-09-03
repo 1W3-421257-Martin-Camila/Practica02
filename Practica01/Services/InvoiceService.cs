@@ -1,5 +1,5 @@
 ﻿using Practica01.Data;
-using Practica01.Datos;
+using Practica01.Data.Interfaces;
 using Practica01.Domain;
 using System;
 using System.Collections.Generic;

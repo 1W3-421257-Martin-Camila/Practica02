@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Practica01.Datos
+namespace Practica01.Data.Interfaces
 {
     public interface IInvoiceRepository
     {
