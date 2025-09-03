@@ -4,10 +4,10 @@ GO
 USE Commerce;
 GO
 
-
+-- CREACIÓN DE TABLAS
 -- Métodos de pago
 CREATE TABLE PaymentMethods (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     Name VARCHAR(50) NOT NULL
 );
 GO
@@ -16,14 +16,15 @@ GO
 CREATE TABLE Articles (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
-    UnitPrice DECIMAL(10,2) NOT NULL
+    UnitPrice DECIMAL(10,2) NOT NULL,
+    IsActive BIT DEFAULT 1
 );
 GO
 
 -- Facturas
 CREATE TABLE Invoices (
     Number INT IDENTITY(1,1) PRIMARY KEY,
-    Date DATE NOT NULL,
+    InvoiceDate DATE NOT NULL,
     PaymentMethodId INT NOT NULL,
     Customer VARCHAR(100) NOT NULL,
     IsActive BIT NOT NULL DEFAULT 1,
@@ -45,91 +46,165 @@ CREATE TABLE InvoiceDetails (
 );
 GO
 
--- Baja lógica de factura
-CREATE PROCEDURE SP_SOFTDELETE_INVOICE
-    @Number INT
+-- INSERTS
+-- Métodos de pago
+INSERT INTO PaymentMethods(Name) VALUES ('Efectivo');
+INSERT INTO PaymentMethods(Name) VALUES ('Tarjeta de Crédito');
+INSERT INTO PaymentMethods(Name) VALUES ('Tarjeta de Débito');
+INSERT INTO PaymentMethods(Name) VALUES ('Transferencia Bancaria');
+GO
+
+-- Artículos de librería
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Cuaderno rayado A4', 1500.00);
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Bolígrafo azul', 200.00);
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Lápiz HB', 120.00);
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Resaltador amarillo', 350.00);
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Carpeta anillada', 2500.00);
+INSERT INTO Articles(Name, UnitPrice) VALUES ('Block de hojas A4', 1800.00);
+GO
+
+-- Facturas
+INSERT INTO Invoices(InvoiceDate, PaymentMethodId, Customer) VALUES ('2025-08-25', 1, 'Carlos Pérez');
+INSERT INTO Invoices(InvoiceDate, PaymentMethodId, Customer) VALUES ('2025-08-26', 2, 'María López');
+INSERT INTO Invoices(InvoiceDate, PaymentMethodId, Customer) VALUES ('2025-08-27', 3, 'Lucía Fernández');
+GO
+
+-- Detalles de facturas
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (1, 2, 1); 
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (2, 5, 1); 
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (3, 3, 2); 
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (5, 1, 2); 
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (4, 4, 3); 
+INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (6, 2, 3); 
+GO
+
+-- PROCEDIMIENTOS ALMACENADOS
+
+-- Guardar detalle de factura
+CREATE PROCEDURE SP_SAVE_INVOICE_DETAIL
+    @ArticleId INT,
+    @Quantity INT,
+    @InvoiceNumber INT
 AS
 BEGIN
-    UPDATE Invoices
-    SET IsActive = 0
-    WHERE Number = @Number;
+    INSERT INTO InvoiceDetails (ArticleId, Quantity, InvoiceNumber)
+    VALUES (@ArticleId, @Quantity, @InvoiceNumber);
 END
 GO
 
--- Obtener factura por número (con detalles)
-CREATE PROCEDURE SP_GET_INVOICE
-    @Number INT
-AS
-BEGIN
-    SELECT 
-        i.Number,
-        i.Date,
-        i.Customer,
-        pm.Id AS PaymentMethodId,
-        pm.Name AS PaymentMethod,
-        d.Quantity,
-        a.Id AS ArticleId,
-        a.Name AS Article,
-        a.UnitPrice,
-        (d.Quantity * a.UnitPrice) AS Subtotal
-    FROM Invoices i
-    INNER JOIN PaymentMethods pm ON i.PaymentMethodId = pm.Id
-    INNER JOIN InvoiceDetails d ON i.Number = d.InvoiceNumber
-    INNER JOIN Articles a ON d.ArticleId = a.Id
-    WHERE i.Number = @Number AND i.IsActive = 1;
-END
-GO
-
--- Obtener todas las facturas activas
-CREATE PROCEDURE SP_GET_ALL_INVOICES
-AS
-BEGIN
-    SELECT 
-        i.Number,
-        i.Date,
-        i.Customer,
-        pm.Id AS PaymentMethodId,
-        pm.Name AS PaymentMethod
-    FROM Invoices i
-    INNER JOIN PaymentMethods pm ON i.PaymentMethodId = pm.Id
-    WHERE i.IsActive = 1;
-END
-GO
-
--- Guardar nueva factura
+-- Guardar factura (insert/update)
 CREATE PROCEDURE SP_SAVE_INVOICE
-    @Date DATE,
+    @Number INT,
+    @InvoiceDate DATE,
     @PaymentMethodId INT,
     @Customer VARCHAR(100)
 AS
 BEGIN
-    INSERT INTO Invoices(Date, PaymentMethodId, Customer)
-    VALUES(@Date, @PaymentMethodId, @Customer);
+    IF @Number = 0
+    BEGIN
+        INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
+        VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
+
+        SELECT SCOPE_IDENTITY() AS NewInvoiceNumber;
+    END
+    ELSE
+    BEGIN
+        UPDATE Invoices
+        SET InvoiceDate = @InvoiceDate,
+            PaymentMethodId = @PaymentMethodId,
+            Customer = @Customer
+        WHERE Number = @Number;
+    END
 END
 GO
 
-
--- Métodos de pago
-INSERT INTO PaymentMethods(Name) VALUES ('Cash');
-INSERT INTO PaymentMethods(Name) VALUES ('Credit Card');
-INSERT INTO PaymentMethods(Name) VALUES ('Debit Card');
+-- Guardar artículo (insert/update)
+CREATE PROCEDURE SP_SAVE_ARTICLE
+    @Id INT,
+    @Name VARCHAR(100),
+    @UnitPrice DECIMAL(10,2)
+AS
+BEGIN
+    IF @Id = 0
+    BEGIN
+        INSERT INTO Articles (Name, UnitPrice, IsActive)
+        VALUES (@Name, @UnitPrice, 1);
+    END
+    ELSE
+    BEGIN
+        UPDATE Articles
+        SET Name = @Name, UnitPrice = @UnitPrice
+        WHERE Id = @Id;
+    END
+END
 GO
 
--- Artículos
-INSERT INTO Articles(Name, UnitPrice) VALUES ('Laptop', 1200.50);
-INSERT INTO Articles(Name, UnitPrice) VALUES ('Mouse', 25.00);
-INSERT INTO Articles(Name, UnitPrice) VALUES ('Keyboard', 45.00);
-INSERT INTO Articles(Name, UnitPrice) VALUES ('Monitor', 300.00);
+-- Insertar factura con OUTPUT del ID
+CREATE PROCEDURE SP_INSERT_INVOICE
+    @InvoiceDate DATE,
+    @PaymentMethodId INT,
+    @Customer VARCHAR(100),
+    @Number INT OUTPUT
+AS
+BEGIN
+    INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
+    VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
+
+    SET @Number = SCOPE_IDENTITY();
+END
 GO
 
--- Facturas
-INSERT INTO Invoices(Date, PaymentMethodId, Customer) VALUES ('2025-08-25', 1, 'John Doe');
-INSERT INTO Invoices(Date, PaymentMethodId, Customer) VALUES ('2025-08-26', 2, 'Jane Smith');
+-- Recuperar artículo por ID
+CREATE PROCEDURE SP_GET_ARTICLE_BY_ID
+    @Id INT
+AS
+BEGIN
+    SELECT * FROM Articles
+    WHERE Id = @Id AND IsActive = 1;
+END
 GO
 
--- Detalles de facturas
-INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (1, 1, 1); -- Laptop en factura 1
-INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (2, 2, 1); -- 2 Mouse en factura 1
-INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (3, 1, 2); -- Keyboard en factura 2
-INSERT INTO InvoiceDetails(ArticleId, Quantity, InvoiceNumber) VALUES (4, 2, 2); -- 2 Monitores en factura 2
+-- Recuperar todos los artículos
+CREATE PROCEDURE SP_GET_ARTICLES
+AS
+BEGIN
+    SELECT * FROM Articles
+    WHERE IsActive = 1;
+END
+GO
+
+-- Dar de baja artículo
+CREATE PROCEDURE SP_DEACTIVATE_ARTICLE
+    @Id INT
+AS
+BEGIN
+    UPDATE Articles
+    SET IsActive = 0
+    WHERE Id = @Id;
+END
+GO
+
+-- Recuperar factura por número
+CREATE PROCEDURE SP_GET_INVOICE_BY_NUMBER
+    @Number INT
+AS
+BEGIN
+    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
+    FROM Invoices i
+    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    INNER JOIN Articles a ON a.Id = d.ArticleId
+    WHERE i.Number = @Number;
+END
+GO
+
+-- Recuperar todas las facturas
+CREATE PROCEDURE SP_GET_INVOICES
+AS
+BEGIN
+    SELECT i.*, d.Id AS DetailId, d.ArticleId, d.Quantity, a.Name AS ArticleName, a.UnitPrice
+    FROM Invoices i
+    INNER JOIN InvoiceDetails d ON d.InvoiceNumber = i.Number
+    INNER JOIN Articles a ON a.Id = d.ArticleId
+    ORDER BY i.Number;
+END
 GO
