@@ -12,8 +12,9 @@ namespace Practica01.Data.Helpers
 {
     public class DataHelper
     {
-        private static DataHelper _instance;
+        private static DataHelper? _instance;
         private SqlConnection _connection;
+        SqlTransaction _transaction; //Esto es para el UnitOfWork
 
         private DataHelper() //Patrón Singleton --> Constructor privado
         {
