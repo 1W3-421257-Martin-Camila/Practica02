@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace Práctica01_API.Controllers
+using CommerceBack.Domain;
+using CommerceBack.Services;
+using CommerceBack.Servicios;
+namespace CommerceWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
+        private InvoiceService _invoiceService;
+
         // GET: api/<InvoiceController>
         [HttpGet]
         public IEnumerable<string> Get()

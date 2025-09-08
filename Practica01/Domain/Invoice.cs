@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Practica01.Domain
+namespace CommerceBack.Domain
 {
     public class Invoice
     {

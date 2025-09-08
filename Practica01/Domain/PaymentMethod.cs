@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Practica01.Domain
+namespace CommerceBack.Domain
 {
     public class PaymentMethod
     {

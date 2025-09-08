@@ -1,4 +1,4 @@
-﻿using Practica01.Domain;
+﻿using CommerceBack.Domain;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Practica01.Domain
+namespace CommerceBack.Domain
 {
     public class InvoiceDetail
     {

@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-using Practica01.Domain;
+using CommerceBack.Domain;
 
-namespace Practica01.Data.Helpers
+namespace CommerceBack.Data.Helpers
 {
     public class DataHelper
     {

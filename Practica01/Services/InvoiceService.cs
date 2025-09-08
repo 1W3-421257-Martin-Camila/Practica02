@@ -1,16 +1,17 @@
-﻿using Practica01.Data;
-using Practica01.Data.Implementations;
-using Practica01.Data.Interfaces;
-using Practica01.Domain;
+﻿using CommerceBack.Data;
+using CommerceBack.Data.Implementations;
+using CommerceBack.Data.Interfaces;
+using CommerceBack.Domain;
+using CommerceBack.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Practica01.Servicios
+namespace CommerceBack.Servicios
 {
-    public class InvoiceService
+    public class InvoiceService : IInvoiceService
     {
         private IInvoiceRepository _invoiceRepository;
         public InvoiceService()

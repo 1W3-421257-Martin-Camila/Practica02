@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
-using Practica01.Data.Helpers;
-using Practica01.Data.Implementations;
-using Practica01.Domain;
+using CommerceBack.Data.Helpers;
+using CommerceBack.Data.Implementations;
+using CommerceBack.Domain;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Practica01.Services
+namespace CommerceBack.Services
 {
     internal class UnitOfWork : IDisposable
     {

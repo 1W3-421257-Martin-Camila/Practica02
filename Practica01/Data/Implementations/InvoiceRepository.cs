@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
-using Practica01.Data.Helpers;
-using Practica01.Data.Interfaces;
-using Practica01.Domain;
+using CommerceBack.Data.Helpers;
+using CommerceBack.Data.Interfaces;
+using CommerceBack.Domain;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Practica01.Data.Implementations
+namespace CommerceBack.Data.Implementations
 {
     public class InvoiceRepository : IInvoiceRepository
     {
@@ -112,7 +112,7 @@ namespace Practica01.Data.Implementations
                 conexion.Open();
                 t = conexion.BeginTransaction();
 
-                SqlCommand cmd = new SqlCommand("SP_INSERTAR_MAESTRO", conexion, t);
+                SqlCommand cmd = new SqlCommand("SP_SAVE_INVOICE", conexion, t);
                 cmd.CommandType = CommandType.StoredProcedure;
               
                 Parameter p = new Parameter("@Number", SqlDbType.Int);
@@ -129,7 +129,7 @@ namespace Practica01.Data.Implementations
 
                 foreach (InvoiceDetail detail in invoice.Details)
                 {
-                    SqlCommand cmdDetail = new SqlCommand("SP_INSERTAR_DETALLE", conexion, t);
+                    SqlCommand cmdDetail = new SqlCommand("SP_SAVE_DETAIL", conexion, t);
                     cmdDetail.CommandType = CommandType.StoredProcedure;
                     cmdDetail.Parameters.AddWithValue("@InvoiceNumber", invoiceNumber);
                     cmdDetail.Parameters.AddWithValue("@ArticleId", detail.Article.Id);
