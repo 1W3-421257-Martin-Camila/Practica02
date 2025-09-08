@@ -18,7 +18,7 @@ namespace Practica01.Data.Helpers
 
         private DataHelper() //Patrón Singleton --> Constructor privado
         {
-            _connection = new SqlConnection(Properties.Resources.ConnectionString);
+            _connection = new SqlConnection(CommerceBack.Properties.Resources.ConnectionString);
         }
 
         public static DataHelper GetInstance()//Patrón Singleton --> Método de creación estático
@@ -30,6 +30,10 @@ namespace Practica01.Data.Helpers
             return _instance;
         }
 
+        public SqlConnection GetConnection()
+        {
+            return _connection;
+        }
         public DataTable ExecuteSPQuery(string sp, List<Parameter>? parameters = null)
         {
             DataTable dt = new DataTable();

@@ -1,4 +1,5 @@
-﻿using Practica01.Data.Helpers;
+﻿using Microsoft.Data.SqlClient;
+using Practica01.Data.Helpers;
 using Practica01.Data.Interfaces;
 using Practica01.Domain;
 using System;
@@ -19,10 +20,10 @@ namespace Practica01.Data.Implementations
         {
             List<Parameter> parameters = new List<Parameter>()
             {
-                new Parameter() 
+                new Parameter()
                 {
                     Name = "@Number",
-                    Value = id 
+                    Value = id
                 }
             };
 
@@ -71,7 +72,7 @@ namespace Practica01.Data.Implementations
             };
 
             var dt = DataHelper.GetInstance().ExecuteSPQuery("SP_GET_INVOICE_BY_NUMBER", paramaters); //singleton
-                                                                                            //le paso el nombre del SP y la lista de arriba
+                                                                                                      //le paso el nombre del SP y la lista de arriba
 
             //var no cambia el tipo real, dt es un DataTable porque
             //el método ExecuteSPQuery está declarado para devolver
@@ -86,7 +87,7 @@ namespace Practica01.Data.Implementations
             {
                 Invoice i = new Invoice()
                 {
-                    Number = (int)dt.Rows[0]["Number"], 
+                    Number = (int)dt.Rows[0]["Number"],
                     Date = (DateTime)dt.Rows[0]["InvoiceDate"],
                     Customer = dt.Rows[0]["Customer"].ToString(),
                     PaymentMethod = new PaymentMethod()
@@ -102,15 +103,58 @@ namespace Practica01.Data.Implementations
         }
         public bool Save(Invoice invoice)
         {
-            List<Parameter> parameters = new List<Parameter>()
-            {
-                new Parameter("@Number", invoice.Number), //ESTO ASI POR DEFECTO LO VA A DEJAR EN 0 SI ES NUEVO
-                new Parameter("@InvoiceDate", invoice.Date),
-                new Parameter("@PaymentMethodId", invoice.PaymentMethod.Id),
-                new Parameter("@Customer", invoice.Customer)
+            bool aux = true; //variable booleana que indica si la operación fue exitosa.
+            SqlConnection conexion = DataHelper.GetInstance().GetConnection();
+            SqlTransaction t = null; //t es la transacción que se usará para asegurar que todo se ejecute de manera atómica.
 
-            };
-            return DataHelper.GetInstance().ExecuteSpDML("SP_SAVE_INVOICE", parameters);
+            try
+            {
+                conexion.Open();
+                t = conexion.BeginTransaction();
+
+                SqlCommand cmd = new SqlCommand("SP_INSERTAR_MAESTRO", conexion, t);
+                cmd.CommandType = CommandType.StoredProcedure;
+              
+                Parameter p = new Parameter("@Number", SqlDbType.Int);
+                p.Direction = System.Data.ParameterDirection.Output;
+
+                cmd.Parameters.Add(p);
+                cmd.Parameters.AddWithValue("@InvoiceDate", invoice.Date);
+                cmd.Parameters.AddWithValue("@PaymentMethodId", invoice.PaymentMethod.Id);
+                cmd.Parameters.AddWithValue("@Customer", invoice.Customer);
+                cmd.Parameters.AddWithValue("@IsActive", invoice.IsActive);
+
+                cmd.ExecuteNonQuery();
+                int invoiceNumber = (int)p.Value;
+
+                foreach (InvoiceDetail detail in invoice.Details)
+                {
+                    SqlCommand cmdDetail = new SqlCommand("SP_INSERTAR_DETALLE", conexion, t);
+                    cmdDetail.CommandType = CommandType.StoredProcedure;
+                    cmdDetail.Parameters.AddWithValue("@InvoiceNumber", invoiceNumber);
+                    cmdDetail.Parameters.AddWithValue("@ArticleId", detail.Article.Id);
+                    cmdDetail.Parameters.AddWithValue("@Quantity", detail.Quantity);
+                    cmdDetail.ExecuteNonQuery();
+                }
+                t.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en InvoiceRepository.Save: " + ex.Message);
+                if (t != null)
+                {
+                    aux = false;
+                    t.Rollback();
+                }
+            }
+            finally
+            {
+                if (conexion != null && conexion.State == ConnectionState.Open)
+                {
+                    conexion.Close();
+                }
+            }
+            return aux;
         }
     }
 }
