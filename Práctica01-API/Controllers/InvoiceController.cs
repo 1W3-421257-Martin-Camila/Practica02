@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CommerceBack.Domain;
-using CommerceBack.Services;
 using CommerceBack.Servicios;
 namespace CommerceWebAPI.Controllers
 {
@@ -8,38 +7,69 @@ namespace CommerceWebAPI.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private InvoiceService _invoiceService;
+        private readonly InvoiceService _invoiceService;
 
-        // GET: api/<InvoiceController>
+        public InvoiceController()
+        {
+            _invoiceService = new InvoiceService();
+        }
+
+        // GET: api/Invoice
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult GetAll()
         {
-            return new string[] { "value1", "value2" };
+            var invoices = _invoiceService.GetAll();
+            return Ok(invoices); // 200 OK con la lista de facturas
         }
 
-        // GET api/<InvoiceController>/5
+        // GET: api/Invoice/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var invoice = _invoiceService.GetInvoice(id);
+            if (invoice == null)
+                return NotFound($"No se encontró la factura con Id = {id}");
+            return Ok(invoice);
         }
 
-        // POST api/<InvoiceController>
+        // POST: api/Invoice
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Invoice invoice)
         {
+            if (invoice == null)
+                return BadRequest("Se esperaba una factura válida");
+
+            var result = _invoiceService.SaveInvoice(invoice);
+            if (result)
+                return Ok("Factura guardada correctamente");
+            return StatusCode(500, "No se pudo guardar la factura");
         }
 
-        // PUT api/<InvoiceController>/5
+        // PUT: api/Invoice/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Invoice invoice)
         {
+            if (invoice == null || invoice.Number != id)
+                return BadRequest("Datos de factura inválidos");
+
+            var existing = _invoiceService.GetInvoice(id);
+            if (existing == null)
+                return NotFound($"No existe la factura con Id = {id}");
+
+            var result = _invoiceService.SaveInvoice(invoice);
+            if (result)
+                return Ok("Factura actualizada correctamente");
+            return StatusCode(500, "No se pudo actualizar la factura");
         }
 
-        // DELETE api/<InvoiceController>/5
+        // DELETE: api/Invoice/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var result = _invoiceService.DeleteInvoice(id);
+            if (result)
+                return Ok("Factura eliminada correctamente");
+            return NotFound($"No se encontró la factura con Id = {id}");
         }
     }
 }
