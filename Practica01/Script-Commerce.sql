@@ -268,7 +268,3 @@ BEGIN
     END
 END
 GO
-
- select * from invoices
-
- select * from articles
