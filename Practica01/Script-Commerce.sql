@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 create DATABASE Commerce;
+=======
+CREATE DATABASE Commerce;
+>>>>>>> e08451bfc220b1ecce341ec847c46f9610f87618
 GO
 
 USE Commerce;
@@ -82,24 +86,30 @@ GO
 
 --FACTURAS
 -- Guardar factura (insert/update)
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROCEDURE [dbo].[SP_SAVE_INVOICE] 
+CREATE PROCEDURE SP_SAVE_INVOICE
+    @Number INT,
     @InvoiceDate DATE,
     @PaymentMethodId INT,
-    @Customer VARCHAR(100),
-	@Number int OUTPUT
+    @Customer VARCHAR(100)
 AS
 BEGIN
-	INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
-    VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
-    SET @Number = SCOPE_IDENTITY();
+    IF @Number = 0
+    BEGIN
+        INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
+        VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
+
+        SELECT SCOPE_IDENTITY() AS NewInvoiceNumber;
+    END
+    ELSE
+    BEGIN
+        UPDATE Invoices
+        SET InvoiceDate = @InvoiceDate,
+            PaymentMethodId = @PaymentMethodId,
+            Customer = @Customer
+        WHERE Number = @Number;
+    END
 END
 GO
-
-
 -- Dar de baja factura
 CREATE PROCEDURE SP_DEACTIVATE_INVOICE
     @Number INT
@@ -239,18 +249,41 @@ BEGIN
 END
 GO
 
+<<<<<<< HEAD
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROCEDURE [dbo].[SP_SAVE_DETAIL] 
+=======
+CREATE PROCEDURE SP_ADD_OR_UPDATE_INVOICE_DETAIL
+>>>>>>> e08451bfc220b1ecce341ec847c46f9610f87618
     @InvoiceNumber INT,
     @ArticleId INT,
     @Quantity INT
 AS
 BEGIN
+<<<<<<< HEAD
 	INSERT INTO InvoiceDetails(InvoiceNumber, ArticleId, Quantity)
     VALUES (@InvoiceNumber, @ArticleId, @Quantity);
   
 END
 GO
+=======
+    IF EXISTS (
+        SELECT 1 FROM InvoiceDetails
+        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId
+    )
+    BEGIN
+        UPDATE InvoiceDetails
+        SET Quantity = Quantity + @Quantity
+        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO InvoiceDetails (InvoiceNumber, ArticleId, Quantity)
+        VALUES (@InvoiceNumber, @ArticleId, @Quantity);
+    END
+END
+GO
+>>>>>>> e08451bfc220b1ecce341ec847c46f9610f87618
