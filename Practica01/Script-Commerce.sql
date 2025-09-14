@@ -1,4 +1,4 @@
-CREATE DATABASE Commerce;
+create DATABASE Commerce;
 GO
 
 USE Commerce;
@@ -82,30 +82,23 @@ GO
 
 --FACTURAS
 -- Guardar factura (insert/update)
-CREATE PROCEDURE SP_SAVE_INVOICE
-    @Number INT,
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[SP_SAVE_INVOICE] 
     @InvoiceDate DATE,
     @PaymentMethodId INT,
-    @Customer VARCHAR(100)
+    @Customer VARCHAR(100),
+	@Number int OUTPUT
 AS
 BEGIN
-    IF @Number = 0
-    BEGIN
-        INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
-        VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
-
-        SELECT SCOPE_IDENTITY() AS NewInvoiceNumber;
-    END
-    ELSE
-    BEGIN
-        UPDATE Invoices
-        SET InvoiceDate = @InvoiceDate,
-            PaymentMethodId = @PaymentMethodId,
-            Customer = @Customer
-        WHERE Number = @Number;
-    END
+	INSERT INTO Invoices (InvoiceDate, PaymentMethodId, Customer)
+    VALUES (@InvoiceDate, @PaymentMethodId, @Customer);
+    SET @Number = SCOPE_IDENTITY();
 END
 GO
+
 
 -- Dar de baja factura
 CREATE PROCEDURE SP_DEACTIVATE_INVOICE
@@ -246,25 +239,18 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE SP_ADD_OR_UPDATE_INVOICE_DETAIL
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[SP_SAVE_DETAIL] 
     @InvoiceNumber INT,
     @ArticleId INT,
     @Quantity INT
 AS
 BEGIN
-    IF EXISTS (
-        SELECT 1 FROM InvoiceDetails
-        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId
-    )
-    BEGIN
-        UPDATE InvoiceDetails
-        SET Quantity = Quantity + @Quantity
-        WHERE InvoiceNumber = @InvoiceNumber AND ArticleId = @ArticleId;
-    END
-    ELSE
-    BEGIN
-        INSERT INTO InvoiceDetails (InvoiceNumber, ArticleId, Quantity)
-        VALUES (@InvoiceNumber, @ArticleId, @Quantity);
-    END
+	INSERT INTO InvoiceDetails(InvoiceNumber, ArticleId, Quantity)
+    VALUES (@InvoiceNumber, @ArticleId, @Quantity);
+  
 END
 GO
